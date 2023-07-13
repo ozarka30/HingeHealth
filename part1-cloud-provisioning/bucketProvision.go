@@ -49,25 +49,31 @@ func getCreds(ctx context.Context) aws.Config {
 	// Set Config and return it
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		log.Fatalf("failed to load configuration, %v", err)
+		log.Fatalf("Error: Unable to load Configuration, %v", err)
 	}
 
 	return cfg
+}
+
+// Create a Bucket
+// TODO: Bucket Name Validation
+// TODO: Bucket Exists Validation
+func createBucket(ctx context.Context, bucketName string) {
+	// Create client
+	client := s3.NewFromConfig(getCreds(ctx))
+	_, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
+		Bucket: aws.String(bucketName),
+	})
+
+	if err != nil {
+		log.Fatalf("Error: Unable to create Bucket, %v", err)
+	}
 }
 
 func main() {
 	ctx := context.TODO()
 
 	checkRequirements()
-
-	// Create client
-	client := s3.NewFromConfig(getCreds(ctx))
-	cbo, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
-		Bucket: aws.String("adam-henderson"),
-	})
-	if err != nil {
-		log.Fatalf("failed to create bucket, %v", err)
-	}
 
 	fmt.Println(cbo)
 	//TODO: Accept Input
