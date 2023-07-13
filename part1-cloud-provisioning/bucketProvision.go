@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -29,6 +28,7 @@ func validRegion(region string) bool {
 }
 
 // Verify all listed requirements are set before starting
+// TODO: Update to also allow ./aws config
 func checkRequirements() {
 	// Check if AWS Creds exist, error out if they are blank
 	keyEnv := os.Getenv("AWS_ACCESS_KEY_ID")
@@ -37,6 +37,7 @@ func checkRequirements() {
 		log.Fatalf("Error: Check Env Vars AWS_ACCESS_KEY_ID: %s AWS_SECRET_ACCESS_KEY: %s", keyEnv, secretEnv)
 	}
 	// Check that the Region Env Var is set, also that it's valid
+	// TODO: Get region to work without setting ENV
 	region := os.Getenv("AWS_REGION")
 	if !validRegion(region) {
 		log.Fatalf("Error: Verify your region is Valid or Exists AWS_REGION: %s", region)
@@ -59,7 +60,7 @@ func getCreds(ctx context.Context) aws.Config {
 // TODO: Bucket Name Validation
 // TODO: Bucket Exists Validation
 func createBucket(ctx context.Context, bucketName string) {
-	// Create client
+	// Create client and send Create Bucket Cmd
 	client := s3.NewFromConfig(getCreds(ctx))
 	_, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
@@ -70,12 +71,26 @@ func createBucket(ctx context.Context, bucketName string) {
 	}
 }
 
+// Delete a Bucket
+// TODO: List all object about to be deleted
+// TODO: Delete everything in the bucket
+func deleteBucket(ctx context.Context, bucketName string) {
+	// Create client and send Create Bucket Cmd
+	client := s3.NewFromConfig(getCreds(ctx))
+	_, err := client.DeleteBucket(ctx, &s3.DeleteBucketInput{
+		Bucket: aws.String(bucketName),
+	})
+
+	if err != nil {
+		log.Fatalf("Error: Unable to delete Bucket, %v", err)
+	}
+}
+
 func main() {
 	ctx := context.TODO()
 
 	checkRequirements()
-
-	fmt.Println(cbo)
+	deleteBucket(ctx, "adam-henderson")
 	//TODO: Accept Input
 
 	//TODO: Create Bucket
