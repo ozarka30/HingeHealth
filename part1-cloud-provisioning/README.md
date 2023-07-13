@@ -23,3 +23,5 @@ You will be asked if you want to create or delete a bucket, make sure you use lo
 
 You will then be asked what the name of the bucket is
 
+SDK used for AWS Integration
+https://pkg.go.dev/github.com/aws/aws-sdk-go-v2

@@ -38,6 +38,7 @@ func validIssueStatus(message string) bool {
 	return false
 }
 
+// TODO: Better text input validation
 func main() {
 	commitMessage := os.Args[1]
 
