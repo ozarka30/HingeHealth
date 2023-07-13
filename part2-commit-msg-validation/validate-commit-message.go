@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	s "strings"
 
@@ -28,7 +27,7 @@ func validIssueStatus(message string) bool {
 	// Get Issue
 	issue, _, err := jiraClient.Issue.Get(jiraIssueID, nil)
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		// log.Fatalf("Error: %v", err)
 		return false
 	}
 	// Check Assignee and Status
