@@ -72,9 +72,15 @@ func createBucket(ctx context.Context, bucketName string) {
 }
 
 // Delete a Bucket
-// TODO: List all object about to be deleted
+// TODO: List all object about to be deleted and Ask for Confirmation
 // TODO: Delete everything in the bucket
 func deleteBucket(ctx context.Context, bucketName string) {
+	// Check if bucket is empty, if not delete contents
+	empty, objects := emptyBucket(ctx, bucketName)
+
+	if !empty {
+		deleteAllObjects(ctx, objects)
+	}
 	// Create client and send Create Bucket Cmd
 	client := s3.NewFromConfig(getCreds(ctx))
 	_, err := client.DeleteBucket(ctx, &s3.DeleteBucketInput{
@@ -84,6 +90,30 @@ func deleteBucket(ctx context.Context, bucketName string) {
 	if err != nil {
 		log.Fatalf("Error: Unable to delete Bucket, %v", err)
 	}
+}
+
+// Check if the bucket is empty, if not return the keys
+func emptyBucket(ctx context.Context, bucketName string) (bool, *s3.ListObjectsV2Output) {
+	// Get list of objects in bucket
+	client := s3.NewFromConfig(getCreds(ctx))
+	objects, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
+		Bucket: aws.String(bucketName),
+	})
+
+	if err != nil {
+		log.Fatalf("Error: Can't list bucket contents, %v", err)
+	}
+
+	if objects.KeyCount == 0 {
+		return true, objects
+	}
+
+	return false, objects
+
+}
+
+func deleteAllObjects(ctx context.Context, objects *s3.ListObjectsV2Output) {
+	// Get all the objects in
 }
 
 func main() {
