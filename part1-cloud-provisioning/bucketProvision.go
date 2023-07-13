@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 // Array and slice don't have a contains function, this one will confirm the Region is a Valid Region
@@ -113,7 +114,22 @@ func emptyBucket(ctx context.Context, bucketName string) (bool, *s3.ListObjectsV
 }
 
 func deleteAllObjects(ctx context.Context, objects *s3.ListObjectsV2Output) {
-	// Get all the objects in
+	// Get Keys
+	var keys []types.ObjectIdentifier
+	for _, obj := range objects.Contents {
+		keys = append(keys, types.ObjectIdentifier{Key: aws.String(*obj.Key)})
+	}
+
+	// Remove all the objects in the bucket
+	client := s3.NewFromConfig(getCreds(ctx))
+	_, err := client.DeleteObjects(ctx, &s3.DeleteObjectsInput{
+		Bucket: aws.String(*objects.Name),
+		Delete: &types.Delete{Objects: keys},
+	})
+	if err != nil {
+		log.Fatalf("Error: Can't delete bucket contents, %v", err)
+	}
+
 }
 
 func main() {
