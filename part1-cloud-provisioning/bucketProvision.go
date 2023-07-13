@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -74,7 +75,6 @@ func createBucket(ctx context.Context, bucketName string) {
 
 // Delete a Bucket
 // TODO: List all object about to be deleted and Ask for Confirmation
-// TODO: Delete everything in the bucket
 func deleteBucket(ctx context.Context, bucketName string) {
 	// Check if bucket is empty, if not delete contents
 	empty, objects := emptyBucket(ctx, bucketName)
@@ -134,15 +134,23 @@ func deleteAllObjects(ctx context.Context, objects *s3.ListObjectsV2Output) {
 
 func main() {
 	ctx := context.TODO()
-
 	checkRequirements()
-	deleteBucket(ctx, "adam-henderson")
-	//TODO: Accept Input
 
-	//TODO: Create Bucket
+	println("Would you like to Delete or Create a Bucket? (create/delete)")
+	var action string
+	fmt.Scanln(&action)
 
-	//TODO: List Buckets
+	println("What is the bucket name?")
+	var bName string
+	fmt.Scanln(&bName)
 
-	//TODO: Delete Bucket
+	if action == "create" {
+		createBucket(ctx, bName)
+	} else if action == "delete" {
+		deleteBucket(ctx, bName)
+	} else {
+		log.Fatalf("Error: Make sure your action is create or delete in Lowercase, %s", action)
+	}
 
+	// TODO: Input Validation
 }
