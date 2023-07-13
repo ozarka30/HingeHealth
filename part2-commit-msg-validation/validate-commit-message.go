@@ -1,14 +1,18 @@
 package main
 
-import "os"
+import (
+	"os"
+	s "strings"
+)
 
 // Check Message text start with an issue (MYJIRA-123: )
 func validCommitText(message string) bool {
-	return false
+	jiraIssueID := s.Split(message, ":")[0]
+	return s.Contains(jiraIssueID, "MYJIRA-")
 }
 
 // Check Issue state
-func validIssueStatus(issueId string) bool {
+func validIssueStatus(message string) bool {
 	return false
 }
 
